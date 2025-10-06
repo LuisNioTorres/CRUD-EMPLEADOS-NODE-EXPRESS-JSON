@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <input type="checkbox" name="nav-check" id="nav-check">
+    <div class="index">
+
+    <nav>
+        <label for="nav-check">
+            <i class="fa-solid fa-arrow-right"></i>
+        </label>
+    </nav>
+    <main>
+        <h2>Lista de Usuarios</h2>
+        <section class="info-usuario">
+            <form action="" class="formulario__usuario">
+            <div class="formulario__grupo-id">
+            <label for="id-usuario">ID:</label><br>
+            <input type="text" name="id-usuario" id="id-usuario" class="input input__id-usuario">
+            </div>
+
+            <div class="formulario__grupo-nombre">
+            <label for="nombre-usuario">Nombre:</label><br>
+            <input type="text" name="nombre-usuario" id="nombre-usuario" class="input input__nombre-usuario">
+            </div>
+
+            <div class="formulario__grupo-email">
+            <label for="email-usuario">Email:</label><br>
+            <input type="text" name="email-usuario" id="email-usuario" class="input input__nombre-usuario">
+            </div>
+            <button type="button" class="btn btn-primary" id="boton-enviar-usuario">POST USUARIO</button>
+            <button type="button" class="btn btn-warning" id="boton-editar-usuario">EDITAR USUARIO</button>
+            </form>
+        </section>
+
+
+        <table id="tabla-usuarios" class="table table-dark">
+            <thead>
+                <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Opciones</th>
+                </tr>
+            </thead>
+            <tbody class="tbody-tabla-usuarios">
+            </tbody>
+        </table>
+    </main>
+
+    </div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">PERFIL DEL USUARIO</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="perfil-usuario">
+            <div class="formulario__grupo-id">
+            <label for="">ID:</label><br>
+            <input type="text"  id="perfil-id-usuario" class="input" readonly>
+            </div>
+
+            <div class="formulario__grupo-nombre">
+            <label for="">Nombre:</label><br>
+            <input type="text" id="perfil-nombre-usuario" class="input" readonly>
+            </div>
+
+            <div class="formulario__grupo-email">
+            <label for="">Email:</label><br>
+            <input type="text" id="perfil-email-usuario" class="input" readonly>
+            </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="../js/index.js"></script>
+</body>
+</html>
