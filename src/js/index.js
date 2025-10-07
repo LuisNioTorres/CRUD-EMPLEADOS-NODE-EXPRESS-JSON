@@ -211,7 +211,7 @@ class App {
 class Server {
     static async getUsers () {
         try {
-            let resApi = await fetch('http://localhost:5000/users');
+            let resApi = await fetch('http://localhost:4000/users');
             if(!resApi.ok) throw {message : "ERROR AL FETCH", status : resApi.status}
             return await resApi.json();
         }
@@ -223,17 +223,18 @@ class Server {
 
     static async postUser () {
         const newUser = App.createUserFromInputs();
-        const resApi = await fetch('http://localhost:5000/users', {
+        const resApi = await fetch('http://localhost:4000/users', {
             method: 'POST',
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(newUser)
         });
+        if(!resApi.ok) throw { message: resApi.message, status: resApi.status };
         UI.renderUsuarios();
     }
 
     static async putUser () {
         const newUser = App.createUserFromInputs();
-        const resApi = await fetch(`http://localhost:5000/users/${newUser.id}`, ({
+        const resApi = await fetch(`http://localhost:4000/users/${newUser.id}`, ({
             method : 'PUT',
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(newUser)
@@ -243,13 +244,13 @@ class Server {
     }
 
     static async getUserById (idUsuario) {
-        const resApi = await fetch(`http://localhost:5000/users/${idUsuario}`);
+        const resApi = await fetch(`http://localhost:4000/users/${idUsuario}`);
         const usuario = await resApi.json();
         return usuario;
     }
 
     static async deleteUser (id_eliminar) {
-        const resApi = await fetch(`http://localhost:5000/users/${id_eliminar}`, ({
+        const resApi = await fetch(`http://localhost:4000/users/${id_eliminar}`, ({
             method: 'DELETE',
             headers: {"Content-Type": "application/json"}
         }));

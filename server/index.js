@@ -86,22 +86,57 @@ app.post('/users', async (req,res,next) => {
 });
 
 //4.3 PUT
-app.put('/db.json', async (req,res,next) => {
-    //1. NECESITO OBTENER EL ARREGLO DE USUARIOS ACTUAL
-    const data = readFile('db.json','utf8');
+app.put('/users/:id', async (req,res,next) => {
+    try{
+    // 1. Validación con Joi del Objeto que se envía en req.body
+    const {error,value} = userSchema.validate(req.body);
+    if(error) throw new Error(error.details[0].message);
+    //Obtener el id de la URL , y el id del req.body
+    const idParams = Number(req.params.id);
+    const {id,nombre,email} = value;
+    if(idParams !== id) throw new Error("El id de la URL no coincide con el id del usuario");
+    // Todo bien -> Obtener UsersArray actual
+    const data = await readFile('db.json','utf8');
     const usersArray = getUsersArray(data);
-    const idUserParam = req.params.id;
-    //2. NECESITO OBTENER EL ID DEL USUARIO A ACTUALIZAR
-    const actualizadoUsuario = req.body;
-    const {id,name,email} = req.body;
-    //Validar que el id pasado en la URL coincida con el usuario que te envia el body
-    if(idUserParam !== id) throw new Error({message : "El id de params debe ser igual al del usersrray"});
-    //3. Buscar (por su ID) el objeto a actualizar dentro de mi arreglo
-    const index = usersArray.findIndex(user => user.id == idUserParam );
-    //Validar que ese usuario se encuentre en la 
-    //4. Actualizar el usuario que corresponda dentro de mi ARREGLO data
-    usersArray[index]
+    //Buscar el id que me pasaron en mi arreglo de usuarios 
+    const index = usersArray.findIndex( user => user.id == idParams);
+    //Validar que realmente se encuentra en mi arreglo
+    if(index == -1) throw new Error("ID del user a editar no encontrado");
+    //Sí se encuentra el user en mi arreglo, simplemente modificar ese user con sus nuevos valores
+    usersArray[index] = {...usersArray[index], ...value};
+    //Sobreescribir mi db.json
+    await writeFile('db.json',data);
+    //Por ahora, devolver mi usersArray, observar que el user se ha editado 
+    return res.json(data);
+    } 
+    catch (err) {
+        next(err);
+    }
+});
+
+//4.4 DELETE
+app.delete('/users/:id', async (req,res,next) => {
+    try{
+    const id_eliminar = Number(req.params.id);
+    //Obtener mi userArray
+    const data =  await readFile('db.json','utf8');
+    let usersArray = getUsersArray(data);
+    //Validar id de req.params a eliminar, el id debe pertenecer a un user de mi arreglo de usuarios
+    const index = usersArray.findIndex( user => user.id == id_eliminar);
+    if(index == -1) throw new Error("El id del usuario a eliminar no se encuentra");
+    //Modificar el arreglo original , realizando filter, solo los usuarios que no tengan el id a eliminar se quedan
+    //Así no se modifica (abajo) porque cambiaria la direccion de usersArray, ya no apunta al data.users que es el original
+    //usersArray = usersArray.filter( user => user.id !== id_eliminar);
+    data.users = usersArray.filter( user => user.id !== id_eliminar);
+    await writeFile('db.json', data);
+    //Return del arreglo finalmente modificado
+    return res.json(data);
+    } 
+    catch (err) {
+        next(err);
+    }
 })
+
 
 
 //5. MiddleWare de Errores
