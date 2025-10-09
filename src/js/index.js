@@ -211,9 +211,15 @@ class App {
 class Server {
     static async getUsers () {
         try {
+            //Hacer el fetch a  mi servidor normalmente
             let resApi = await fetch('http://localhost:4000/users');
-            if(!resApi.ok) throw {message : "ERROR AL FETCH", status : resApi.status}
-            return await resApi.json();
+            //El fetch puede salir ok = true or ok = false, eso depende de lo que haya devuelto el server
+            //Pero igual devuelve algo siempre, si ok = false , sigue devolviendo algo
+            //Convertir esa respuesta del server en json.
+            //La respuesta puede ser el arreglo de usuarios, o un objeto con info del error 
+            const res = await resApi.json();
+            if(!resApi.ok) throw res;
+            return res;
         }
         catch (err) {
             UI.showErrorMessage(err.message, err.status);

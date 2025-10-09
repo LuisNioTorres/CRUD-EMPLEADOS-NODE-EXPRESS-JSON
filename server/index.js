@@ -52,10 +52,14 @@ app.get('/users', async (req,res,next)  => {
         const data = await readFile('db.json','utf8');
         const usersArray = getUsersArray(data);
         //Validar la informacion data del servidor
-        if(!usersArray || !Array.isArray(usersArray) ) throw new Error("No hay usuarios");
+        if(!usersArray || !Array.isArray(usersArray) || usersArray.length < 1) {
+            const error = new Error('No se encontró información');
+            error.status = 500;
+            throw error;
+        };
         //Retornar la dirección a memoria de la propiedad users de mi objeto data
         //Retornar en formato JSON el arreglo de users
-        return res.json(usersArray);
+        return res.status(200).json(usersArray);
     } catch (err) {
         next(err);
     }
@@ -144,11 +148,13 @@ app.delete('/users/:id', async (req,res,next) => {
 //Ese message se lo muestra según el error que exista.
 //Pero también podemos crear nuestros casos de error, como que data.users se encuentra vacío
 app.use((err,req,res,next) => {
-    console.log("ERROR!", err);
     res.status(err.status || 500).json({
-        message : err.message || "Error interno del servidor"
+        message : err.message || "Error interno del servidor",
+        status : err.status || 500,
+        details : err.details || null
     });
 });
+
 
 // Colocar al servidor app en modo de escucha.
 app.listen(port, () => {

@@ -1,19 +1,9 @@
 {
   "users": [
     {
-      "id": 1,
-      "nombre": "kirkby2",
-      "email": "kirkby2@email.com"
-    },
-    {
-      "id": 2,
-      "nombre": "kirkby2",
-      "email": "kirkby2@email.com"
-    },
-    {
-      "id": 3,
-      "nombre": "Luis",
-      "email": "luisitopt30@hotmail.com"
+      "id" : 1,
+      "nombre" : "Luis",
+      "email" : "luis@dd.com"
     }
   ]
 }
