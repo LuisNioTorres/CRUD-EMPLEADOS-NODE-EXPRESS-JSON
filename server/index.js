@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import fs from 'fs/promises';
 import Joi from 'joi';
+import { read } from 'fs';
 
 // *********** VARIABLES ***********//
 const port = 4000;
@@ -65,6 +66,30 @@ app.get('/users', async (req,res,next)  => {
     }
 });
 
+//AHORA UN GET PERO EN LA URL SE PASA EL PARAMETRO ID PARA RECUPERAR UN USER DETERMINADO
+app.get('/users/:id', async (req,res,next) => {
+    try { 
+    //Verifica que el id a editar exista
+    const id_editar = Number(req.params.id);
+    if(isNaN (id_editar)) {
+        const err = new Error("El id no es un numero");
+        throw err;
+    };
+    //Conseguir mi arreglo Users de mi db.json
+    const data = await readFile('db.json', 'utf8');
+    const usersArray = getUsersArray(data);
+    const find = usersArray.find(user => user.id == id_editar);
+    if(!find) {
+        const err = new Error("El id a editar no se encuentra en la db");
+        throw err;
+    }
+    return res.status(200).json(find);
+    } 
+    catch (err) {
+        next(err);
+    } 
+});
+
 
 //4.2 POST DE USUARIOS
 app.post('/users', async (req,res,next) => {
@@ -72,7 +97,13 @@ app.post('/users', async (req,res,next) => {
         //Este mismo newUser lo conseguimos en value de la validación de Joi
         //const newUser = req.body;
         const {error, value} = userSchema.validate(req.body);
-        if(error) throw new Error(error.details[0].message);
+        if(error) { 
+            console.log("ENTRO AL IF DE POST");
+            const err = new Error ("Formato incorrecto del nuevo usuario");
+            err.status = 400;
+            err.details = error.details[0].message;
+            throw err ;
+        }
         //El newUser todo  bien seguir normalmente
         //1. Obtener el arreglo de usuarios actuales
         const data = await readFile('db.json','utf8');
@@ -91,21 +122,36 @@ app.post('/users', async (req,res,next) => {
 
 //4.3 PUT
 app.put('/users/:id', async (req,res,next) => {
+    const err = new Error();
     try{
     // 1. Validación con Joi del Objeto que se envía en req.body
     const {error,value} = userSchema.validate(req.body);
-    if(error) throw new Error(error.details[0].message);
+    if(error) {
+        err.message = "El user está mal ingresado";
+        err.status = 400;
+        err.details = error.details[0].message;
+        throw err;
+    };
     //Obtener el id de la URL , y el id del req.body
     const idParams = Number(req.params.id);
     const {id,nombre,email} = value;
-    if(idParams !== id) throw new Error("El id de la URL no coincide con el id del usuario");
+    if(idParams !== id) {
+        err.message = "El id de la URL no coincide con el de usuario";
+        err.status = 400;
+        throw err;
+    }
+
     // Todo bien -> Obtener UsersArray actual
     const data = await readFile('db.json','utf8');
     const usersArray = getUsersArray(data);
     //Buscar el id que me pasaron en mi arreglo de usuarios 
     const index = usersArray.findIndex( user => user.id == idParams);
     //Validar que realmente se encuentra en mi arreglo
-    if(index == -1) throw new Error("ID del user a editar no encontrado");
+    if(index == -1) { 
+        err.message = "El id del user no se encuentra en la bd";
+        err.status = 400;
+        throw err;
+    }
     //Sí se encuentra el user en mi arreglo, simplemente modificar ese user con sus nuevos valores
     usersArray[index] = {...usersArray[index], ...value};
     //Sobreescribir mi db.json
@@ -140,8 +186,6 @@ app.delete('/users/:id', async (req,res,next) => {
         next(err);
     }
 })
-
-
 
 //5. MiddleWare de Errores
 //Cada error que podamos encontrar en nuestro código, la mayoría manda un message de error.

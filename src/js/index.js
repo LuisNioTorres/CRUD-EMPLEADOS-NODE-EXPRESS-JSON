@@ -228,31 +228,54 @@ class Server {
     }
 
     static async postUser () {
+        try {
+
         const newUser = App.createUserFromInputs();
         const resApi = await fetch('http://localhost:4000/users', {
             method: 'POST',
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(newUser)
         });
-        if(!resApi.ok) throw { message: resApi.message, status: resApi.status };
+        const res = await resApi.json();
+        if(!resApi.ok) throw res ;
         UI.renderUsuarios();
+        }
+        catch (err) {
+            console.log(err);
+            UI.showErrorMessage(err.message,err.status);
+        }
     }
 
     static async putUser () {
+        try { 
         const newUser = App.createUserFromInputs();
         const resApi = await fetch(`http://localhost:4000/users/${newUser.id}`, ({
             method : 'PUT',
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(newUser)
         }));
+        const res = await resApi.json();
+        if(!res.ok) throw res
         UI.cleanInputs();
         UI.renderUsuarios();
+        }
+        catch (err) {
+            console.log(err);
+            UI.showErrorMessage(err.message,err.status);
+            UI.cleanInputs();
+        }
     }
 
     static async getUserById (idUsuario) {
+        try {
         const resApi = await fetch(`http://localhost:4000/users/${idUsuario}`);
         const usuario = await resApi.json();
+        console.log(usuario);
         return usuario;
+        }
+        catch (err) {
+            console.log(err);
+        }
     }
 
     static async deleteUser (id_eliminar) {
